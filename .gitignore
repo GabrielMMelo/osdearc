@@ -1,6 +1,7 @@
 # temp dirs
 dags_bkp/
 dags/modules/
+dags/__pycache__/
 .git.bkp
 
 # IDE
