@@ -1,0 +1,23 @@
+# temp dirs
+dags_bkp/
+dags/modules/
+.git.bkp
+
+# IDE
+.idea/
+
+# certificates
+certs/
+
+# Logs
+logs/
+
+# auto generated
+unittests.cfg
+webserver_config.py
+airflow.cfg
+
+# dev env
+venv/
+.env
+requirements.txt
