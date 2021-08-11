@@ -44,6 +44,7 @@ services:
         volumes:
             - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
             - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
             - ./certs:/spark/certs
         ports:
             - "8080:8080"
@@ -61,6 +62,7 @@ services:
         volumes:
             - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
             - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
             - ./certs:/spark/certs
         ports:
             - "8081:8081"
@@ -77,8 +79,28 @@ services:
         volumes:
             - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
             - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
             - ./certs:/spark/certs
         ports:
             - "8082:8081"
         environment:
             - "SPARK_MASTER=spark://spark-master:7077"
+
+    dremio-master:
+        build:
+            context: ./
+            dockerfile: ./images/dremio/Dockerfile
+        container_name: dremio-master
+        restart: always
+        volumes:
+            - ./dremio/data:/opt/dremio/data
+            - ./dremio/conf:/opt/dremio/conf
+            #- ./certs:/opt/dremio/certs
+        ports:
+            - "9047:9047"
+            - "31010:31010" 
+            - "45678:45678"
+        #environment:
+        #    - AIRFLOW__CELERY__BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
+        command: >
+            sh -c "bin/dremio --config /opt/dremio/conf start-fg"
