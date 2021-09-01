@@ -13,6 +13,9 @@ certs/
 # Logs
 logs/
 
+# data
+dremio/data/
+
 # auto generated
 unittests.cfg
 webserver_config.py
@@ -22,3 +25,6 @@ airflow.cfg
 venv/
 .env
 requirements.txt
+
+# secrets
+dremio/conf/core-site.xml

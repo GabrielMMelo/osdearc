@@ -18,6 +18,8 @@ services:
         build:
             context: ./
             dockerfile: ./images/airflow-worker/Dockerfile
+            args:
+                DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
         container_name: airflow-celery-worker-1
         restart: always
         volumes:
@@ -27,6 +29,7 @@ services:
             - ./certs:/opt/airflow/certs
             - ./spark:/opt/airflow/spark
             - ./conf/airflow.cfg:/opt/airflow/airflow.cfg
+            - /var/run/docker.sock:/var/run/docker.sock
         ports:
             - "8793:8793"
         environment:
@@ -99,8 +102,7 @@ services:
         ports:
             - "9047:9047"
             - "31010:31010" 
+            - "32010:32010" 
             - "45678:45678"
-        #environment:
-        #    - AIRFLOW__CELERY__BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
         command: >
             sh -c "bin/dremio --config /opt/dremio/conf start-fg"
