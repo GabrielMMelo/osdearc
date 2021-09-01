@@ -28,3 +28,11 @@ requirements.txt
 
 # secrets
 dremio/conf/core-site.xml
+
+
+# superset
+superset/superset_home/
+superset/db_home/
+superset/docker/
+superset/redis/
+superset/scripts/notes.txt
