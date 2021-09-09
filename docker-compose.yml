@@ -106,3 +106,16 @@ services:
             - "45678:45678"
         command: >
             sh -c "bin/dremio --config /opt/dremio/conf start-fg"
+    mongodb:
+        build:
+            context: ./
+            dockerfile: ./images/mongodb/Dockerfile
+        container_name: mongodb
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        volumes:
+            - ./mongodb/data/db:/data/db
+        ports:
+            - "27017:27017"
