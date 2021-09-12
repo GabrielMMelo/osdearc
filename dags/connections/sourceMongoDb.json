@@ -1,0 +1,12 @@
+{
+  "connectionConfiguration": {
+    "ssl": false,
+    "host": "localhost",
+    "port": 27017,
+    "user": "root",
+    "database": "ods",
+    "password": "root123",
+    "auth_source": "admin",
+    "replica_set": ""
+  }
+}
