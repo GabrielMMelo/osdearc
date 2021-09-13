@@ -19,7 +19,6 @@ dremio/data/
 # auto generated
 unittests.cfg
 webserver_config.py
-airflow.cfg
 
 # dev env
 venv/
