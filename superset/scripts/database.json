@@ -1,6 +1,0 @@
-{
-  "configuration_method": "sqlalchemy_form",
-  "database_name": "Dremio_FROM_API",
-  "engine": "dremio",
-  "sqlalchemy_uri": "dremio://superset:superset123@host.docker.internal:31010/dremio"
-}

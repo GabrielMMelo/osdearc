@@ -1,6 +1,0 @@
-{
-  "password": "admin",
-  "provider": "db",
-  "refresh": true,
-  "username": "admin"
-}
