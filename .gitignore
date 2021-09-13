@@ -2,10 +2,8 @@
 
 #
 # files
-!.gitignore
 !airflow.cfg
 !README.md
 
 # folders
 !dags/*
-
