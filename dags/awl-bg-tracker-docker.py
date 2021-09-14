@@ -45,7 +45,7 @@ t1 = DockerOperator(
         # "MONGODB_PORT": 27017,
         # "MONGODB_DOCUMENTS_TTL": 259200,  # in seconds
         # "MONGODB_TIMEZONE": "America/Sao_Paulo",
-        "MONGODB_DB": "staging",
+        "MONGODB_DB": str(dag.dag_id),
         "MONGODB_COLLECTION": str(dag.dag_id)
     },
     do_xcom_push=False,
@@ -77,6 +77,7 @@ def airbyte_create_connection():
 
         connection_configuration = update_json(
             json=connection_configuration,
+            database=dag.dag_id,
             user=mongodb_conn.login,
             password=mongodb_conn.password
         )
