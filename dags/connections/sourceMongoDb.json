@@ -3,9 +3,9 @@
     "ssl": false,
     "host": "host.docker.internal",
     "port": 27017,
-    "user": "root",
-    "database": "ods",
-    "password": "root123",
+    "user": "***",
+    "database": "staging",
+    "password": "***",
     "auth_source": "admin",
     "replica_set": ""
   }

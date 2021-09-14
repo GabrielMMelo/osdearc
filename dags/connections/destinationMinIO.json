@@ -1,0 +1,19 @@
+{
+  "connectionConfiguration": {
+    "format": {
+      "format_type": "Parquet",
+      "page_size_kb": 1024,
+      "block_size_mb": 128,
+      "compression_codec": "UNCOMPRESSED",
+      "dictionary_encoding": true,
+      "max_padding_size_mb": 8,
+      "dictionary_page_size_kb": 1024
+    },
+    "s3_endpoint": "http://rpi.home.net:9000",
+    "access_key_id": "***",
+    "s3_bucket_name": "lake",
+    "s3_bucket_path": "dev/01_raw",
+    "s3_bucket_region": "us-east-1",
+    "secret_access_key": "***"
+  }
+}
