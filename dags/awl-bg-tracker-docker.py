@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 import json
+import logging
+import os
 
 import requests
 from airflow import DAG
@@ -18,7 +20,7 @@ default_args = {
     'email_on_failure': True,
     'email_on_retry': True,
     'start_date': days_ago(2),
-    'retries': 1,
+    'retries': 0,
     'retry_delay': timedelta(minutes=1)
 }
 
@@ -41,28 +43,34 @@ t1 = DockerOperator(
         # "MONGODB_DB": "middleware",
         # "MONGODB_DOCUMENTS_TTL": 259200,  # in seconds
         # "MONGODB_TIMEZONE": "America/Sao_Paulo",
-        "MONGODB_COLLECTION": dag.dag_id
+        "MONGODB_COLLECTION": str(dag.dag_id)
     },
+    do_xcom_push=False,
     dag=dag
 )
 
 def airbyte_create_connection():
     ab = AirbyteAPI(
-        host="localhost",
+        host="host.docker.internal",
         port=8000,
         ssl=False
     )
 
-    if not ab.source_exists(source_name=dag.dag_id):
-        workspace_id = ab.get_workspace_id_by_email("gabrielmelocomp@gmail.com")
-        source_definition_id = ab.get_source_definition_id_by_repository(repository="airbyte/source-mongodb")
+    logging.info("Getting workspace id by email")
+    workspace_id = ab.get_workspace_id_by_email("gabrielmelocomp@gmail.com")
+    logging.info("Workspace ID: " + workspace_id)
 
-        with open('./connections/sourceMongoDb.json', 'r') as f:
+    if not ab.source_exists(workspace_id=workspace_id, source_name=str(dag.dag_id)):
+        source_definition_id = ab.get_source_definition_id_by_repository(repository="airbyte/source-mongodb")
+        logging.info("Source Definition ID: " + source_definition_id)
+
+        with open('dags/connections/sourceMongoDb.json', 'r') as f:
             connection_configuration = json.loads(f.read())["connectionConfiguration"]
+            # TODO: update connection_configuration password field with env var
+            logging.info(connection_configuration)
 
         ab.create_source(
             name=dag.dag_id,
-            source_name="MongoDB",
             workspace_id=workspace_id,
             source_definition_id=source_definition_id,
             connection_configuration=connection_configuration

@@ -1,7 +1,7 @@
 {
   "connectionConfiguration": {
     "ssl": false,
-    "host": "localhost",
+    "host": "host.docker.internal",
     "port": 27017,
     "user": "root",
     "database": "ods",
