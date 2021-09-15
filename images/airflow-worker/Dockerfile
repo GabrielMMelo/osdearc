@@ -13,4 +13,5 @@ RUN groupadd -g $DOCKER_GROUP_ID docker \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/*.bin 
 RUN usermod -aG docker airflow
 USER airflow
-RUN pip install --user apache-airflow-providers-apache-spark==1.0.3
+#TODO: use requirements.txt
+RUN pip install --user apache-airflow-providers-apache-spark==1.0.3 pymongo

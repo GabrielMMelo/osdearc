@@ -2,19 +2,20 @@ from datetime import datetime, timedelta
 import json
 import logging
 import os
-
 import requests
+import time
+
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.utils.dates import days_ago
+from pymongo import MongoClient
 
 from lib.Airbyte import AirbyteAPI
 from lib.utils import (update_json)
 
-project_home = Variable.get("PROJECT_HOME")
 minio_conn = BaseHook.get_connection("minio")
 mongodb_conn = BaseHook.get_connection("mongodb")
 
@@ -23,7 +24,7 @@ default_args = {
     'depends_on_past': False,
     'email_on_failure': True,
     'email_on_retry': True,
-    'start_date': days_ago(2),
+    'start_date': days_ago(1),
     'retries': 0,
     'retry_delay': timedelta(minutes=1)
 }
@@ -31,9 +32,10 @@ default_args = {
 dag = DAG(
     'awl-bg-tracker-docker',
     default_args=default_args,
-    schedule_interval='0 */4 * * *',
     description='Track prices from a given Amazon Wishlist (aka. AWL), via webcrawler, and store it in a postgresql '
-                'database. '
+                'database. ',
+    schedule_interval='0 */4 * * *',
+    catchup=False
 )
 
 t1 = DockerOperator(
@@ -53,7 +55,7 @@ t1 = DockerOperator(
 )
 
 
-def airbyte_create_connection():
+def airbyte_create_connection(**kwargs):
     ab = AirbyteAPI(
         host="host.docker.internal",
         port=8000,
@@ -132,7 +134,7 @@ def airbyte_create_connection():
 
         source_stream = ab.get_source_stream(source_id=source_id)
 
-        ab.create_connection(
+        connection_id = ab.create_connection(
             source_stream=source_stream,
             source_id=source_id,
             destination_id=destination_id,
@@ -141,6 +143,35 @@ def airbyte_create_connection():
     else:
         logging.info("Connection already exists.")
 
+    # kwargs['ti'].xcom_push(key='connection_id', value=connection_id)
+    return connection_id
+
+
+def airbyte_trigger_sync(**kwargs):
+    ti = kwargs['ti']
+    connection_id = ti.xcom_pull(task_ids='airbyte_create_connection')
+
+    ab = AirbyteAPI(
+        host="host.docker.internal",
+        port=8000,
+        ssl=False
+    )
+
+    job_id = ab.sync_connection(connection_id=connection_id)
+    logging.info(job_id)
+
+    job_status = ab.get_job_status(job_id)
+    while job_status != "succeeded":
+        logging.info("Job Status: " + job_status)
+        time.sleep(5)
+        job_status = ab.get_job_status(job_id)
+
+    logging.info("Job Status: " + job_status)
+
+def mongodb_cleanup():
+    client = MongoClient(mongodb_conn.host, mongodb_conn.port)
+    client.drop_database(dag.dag_id)
+
 
 t2 = PythonOperator(
     task_id="airbyte_create_connection",
@@ -148,10 +179,10 @@ t2 = PythonOperator(
     dag=dag
 )
 
-"""
 t3 = PythonOperator(
     task_id="airbyte_trigger_sync",
     python_callable=airbyte_trigger_sync,
+    provide_context=True,
     dag=dag
 )
 
@@ -160,6 +191,5 @@ t4 = PythonOperator(
     python_callable=mongodb_cleanup,
     dag=dag
 )
-"""
 
-t1 >> t2 #>> t3 >> t4
+t1 >> t2 >> t3 >> t4

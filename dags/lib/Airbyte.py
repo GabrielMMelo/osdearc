@@ -174,4 +174,30 @@ class AirbyteAPI():
         response = connection_creation.json()
         logging.info(response)
 
-        return response
+        return response.get("connectionId")
+
+    def sync_connection(self, connection_id):
+        """Trigger a manual sync for a connection."""
+        sync_connections_endpoint = "/api/v1/connections/sync"
+        sync_connections_url = self.url + sync_connections_endpoint
+        data = {
+            "connectionId": connection_id
+        }
+        response = requests.post(sync_connections_url, data=json.dumps(data),
+                                 headers={'Content-Type': "application/json"})
+        job = response.json()
+
+        return job.get("job").get("id")
+
+    def get_job_status(self, job_id):
+        """Returns the current status from a given job."""
+        get_job_endpoint = "/api/v1/jobs/get"
+        get_job_url = self.url + get_job_endpoint
+        data = {
+            "id": job_id
+        }
+        response = requests.post(get_job_url, data=json.dumps(data),
+                                 headers={'Content-Type': "application/json"})
+        job = response.json()
+
+        return job.get("job").get("status")
