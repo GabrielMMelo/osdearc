@@ -1,0 +1,41 @@
+{
+  "name": "default",
+  "namespaceDefinition": "source",
+  "namespaceFormat": "${SOURCE_NAMESPACE}",
+  "prefix": "",
+  "sourceId": "SOURCE_ID",
+  "destinationId": "DESTINATION_ID",
+  "operationIds": [],
+  "syncCatalog": {
+    "streams": [
+      {
+        "stream": {
+          "name": "STREAM_NAME",
+          "jsonSchema": {},
+          "supportedSyncModes": [
+            "full_refresh",
+            "incremental"
+          ],
+          "sourceDefinedCursor": false,
+          "defaultCursorField": [],
+          "sourceDefinedPrimaryKey": [],
+          "namespace": null
+        },
+        "config": {
+          "syncMode": "full_refresh",
+          "destinationSyncMode": "append",
+          "primaryKey": [],
+          "selected": true
+        }
+      }
+    ]
+  },
+  "schedule": null,
+  "status": "active",
+  "resourceRequirements": {
+    "cpu_request": null,
+    "cpu_limit": null,
+    "memory_request": null,
+    "memory_limit": null
+  }
+}
