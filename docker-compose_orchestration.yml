@@ -1,0 +1,39 @@
+version: '3'
+services:
+    airflow-flower:
+        build:
+            context: ./
+            dockerfile: ./images/flower/Dockerfile
+        container_name: airflow-flower
+        restart: always
+        volumes:
+            - ./conf/airflow.cfg:/opt/airflow/airflow.cfg
+        ports:
+            - "5555:5555"
+        environment:
+            - AIRFLOW__CELERY__BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
+        command: celery flower
+        
+    airflow-worker-1:
+        build:
+            context: ./
+            dockerfile: ./images/airflow-worker/Dockerfile
+            args:
+                DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
+        container_name: airflow-celery-worker-1
+        restart: always
+        volumes:
+            - ./dags:/opt/airflow/dags
+            - ./logs:/opt/airflow/logs
+            - ./plugins:/usr/local/airflow/plugins
+            - ./certs:/opt/airflow/certs
+            - ./spark:/opt/airflow/spark
+            - ./conf/airflow.cfg:/opt/airflow/airflow.cfg
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - "8793:8793"
+        environment:
+            - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_AIRFLOW_USER}:${POSTGRES_AIRFLOW_PASS}@${POSTGRES_AIRFLOW_HOST}:${POSTGRES_AIRFLOW_PORT}/${POSTGRES_AIRFLOW_DB}
+            - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${POSTGRES_AIRFLOW_RESULTS_USER}:${POSTGRES_AIRFLOW_RESULTS_PASS}@${POSTGRES_AIRFLOW_RESULTS_HOST}:${POSTGRES_AIRFLOW_RESULTS_PORT}/${POSTGRES_AIRFLOW_RESULTS_DB}
+            - AIRFLOW__CELERY__BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
+        command: celery worker
