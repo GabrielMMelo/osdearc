@@ -7,11 +7,12 @@ services:
         container_name: airflow-flower
         restart: always
         volumes:
-            - ./conf/airflow.cfg:/opt/airflow/airflow.cfg
+            - ./airflow.cfg:/opt/airflow/airflow.cfg
         ports:
             - "5555:5555"
         environment:
-            - AIRFLOW__CELERY__BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
+            - DB_HOST=${REDIS_HOST}
+            - DB_PORT=${REDIS_PORT}
         command: celery flower
         
     airflow-worker-1:
@@ -28,7 +29,7 @@ services:
             - ./plugins:/usr/local/airflow/plugins
             - ./certs:/opt/airflow/certs
             - ./spark:/opt/airflow/spark
-            - ./conf/airflow.cfg:/opt/airflow/airflow.cfg
+            - ./airflow.cfg:/opt/airflow/airflow.cfg
             - /var/run/docker.sock:/var/run/docker.sock
         ports:
             - "8793:8793"
