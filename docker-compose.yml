@@ -53,6 +53,7 @@ services:
             - "8080:8080"
             - "7077:7077"
         environment:
+            - SPARK_MODE=master
             - INIT_DAEMON_STEP=setup_spark
 
     spark-worker-1:
@@ -71,6 +72,7 @@ services:
             - "8081:8081"
         environment:
             - "SPARK_MASTER=spark://spark-master:7077"
+            - SPARK_MODE=worker
 
     spark-worker-2:
         build:
@@ -88,6 +90,7 @@ services:
             - "8082:8081"
         environment:
             - "SPARK_MASTER=spark://spark-master:7077"
+            - SPARK_MODE=worker
 
     dremio-master:
         build:
