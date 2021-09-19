@@ -142,7 +142,7 @@ services:
     mongodb:
         build:
             context: ./
-            dockerfile: ./images/mongodb/Dockerfile
+            dockerfile: ./images/mongo/mongodb/Dockerfile
         container_name: mongodb
         restart: always
         environment:
@@ -152,6 +152,22 @@ services:
             - ./mongodb/data/db:/data/db
         ports:
             - "27017:27017"
+    mongo-express:
+        build:
+            context: ./
+            dockerfile: ./images/mongo/mongo-express/Dockerfile
+        container_name: mongo-express
+        restart: always
+        environment:
+            ME_CONFIG_BASICAUTH_USERNAME: 'admin'
+            ME_CONFIG_BASICAUTH_PASSWORD: 'admin123'
+            ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
+            ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+            ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+            ME_CONFIG_MONGODB_SERVER: 'mongodb'
+            ME_CONFIG_MONGODB_PORT: 27017
+        ports:
+            - "8017:8081"
 volumes:
     workspace:
         name: ${WORKSPACE_DOCKER_MOUNT}
