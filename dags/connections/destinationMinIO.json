@@ -11,8 +11,8 @@
     },
     "s3_endpoint": "http://rpi.home.net:9000",
     "access_key_id": "***",
-    "s3_bucket_name": "lake",
-    "s3_bucket_path": "dev/01_raw",
+    "s3_bucket_name": "lake-dev",
+    "s3_bucket_path": "01_bronze",
     "s3_bucket_region": "us-east-1",
     "secret_access_key": "***"
   }
