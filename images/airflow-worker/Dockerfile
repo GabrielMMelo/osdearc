@@ -1,5 +1,5 @@
 ARG DOCKER_GROUP_ID
-FROM apache/airflow:2.0.1-python3.7
+FROM apache/airflow:2.1.4-python3.8
 ARG DOCKER_GROUP_ID
 USER root
 RUN apt update && apt install -y default-jdk  apt-transport-https ca-certificates curl gnupg2 software-properties-common
