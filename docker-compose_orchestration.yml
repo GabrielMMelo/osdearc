@@ -21,13 +21,14 @@ services:
             dockerfile: ./images/airflow-worker/Dockerfile
             args:
                 DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
+        hostname: airflow-celery-worker-1
         container_name: airflow-celery-worker-1
         restart: always
         volumes:
             - ./dags:/opt/airflow/dags
             - ./logs:/opt/airflow/logs
-            - ./plugins:/usr/local/airflow/plugins
-            - ./certs:/opt/airflow/certs
+            #- ./plugins:/usr/local/airflow/plugins
+            #- ./certs:/opt/airflow/certs
             - ./spark:/opt/airflow/spark
             - ./airflow.cfg:/opt/airflow/airflow.cfg
             - /var/run/docker.sock:/var/run/docker.sock
@@ -37,4 +38,6 @@ services:
             - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_AIRFLOW_USER}:${POSTGRES_AIRFLOW_PASS}@${POSTGRES_AIRFLOW_HOST}:${POSTGRES_AIRFLOW_PORT}/${POSTGRES_AIRFLOW_DB}
             - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${POSTGRES_AIRFLOW_RESULTS_USER}:${POSTGRES_AIRFLOW_RESULTS_PASS}@${POSTGRES_AIRFLOW_RESULTS_HOST}:${POSTGRES_AIRFLOW_RESULTS_PORT}/${POSTGRES_AIRFLOW_RESULTS_DB}
             - AIRFLOW__CELERY__BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
+            - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
+            - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_WEBSERVER_SECRET_KEY}
         command: celery worker
