@@ -5,7 +5,9 @@ FROM openjdk:8-jdk as run
 #LABEL org.label-schema.name='dremio/dremio-oss'
 #LABEL org.label-schema.description='Dremio OSS.'
 
-ARG DOWNLOAD_URL=https://download.dremio.com/community-server/4.9.0-202010170313000159-4a37757a/dremio-community-4.9.0-202010170313000159-4a37757a.tar.gz
+#ARG DOWNLOAD_URL=https://download.dremio.com/community-server/4.9.0-202010170313000159-4a37757a/dremio-community-4.9.0-202010170313000159-4a37757a.tar.gz
+ARG DOWNLOAD_URL=https://download.dremio.com/community-server/18.1.0-202109222258120166-963adceb/dremio-community-18.1.0-202109222258120166-963adceb.tar.gz
+
 #ARG DOWNLOAD_URL=https://download.dremio.com/community-server/dremio-community-LATEST.tar.gz
 
 RUN \

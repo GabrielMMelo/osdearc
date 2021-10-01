@@ -1,0 +1,19 @@
+version: '3'
+services:
+    dremio-master:
+        build:
+            context: ./
+            dockerfile: ./images/dremio/Dockerfile
+        container_name: dremio-master
+        restart: always
+        volumes:
+            - ./dremio/data:/opt/dremio/data
+            - ./dremio/conf:/opt/dremio/conf
+            #- ./certs:/opt/dremio/certs
+        ports:
+            - "9047:9047"
+            - "31010:31010" 
+            - "32010:32010" 
+            - "45678:45678"
+        command: >
+            sh -c "bin/dremio-admin upgrade && bin/dremio --config /opt/dremio/conf start-fg"
