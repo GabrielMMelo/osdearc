@@ -1,0 +1,13 @@
+# 2021-10-03
+
+- Não fazia sentido rodar via container
+- instalei ge local e iniciei o projeto (versão 0.13.36)
+- rodei `great_expectations datasource new` e abriu um jupyter notebook para configurar o datasource
+- neste notebook, configurei para utilizar o spark master do meu cluster standalone
+
+## Problema
+- Consegui instalar as dependencias do spark, contudo não consegui setar o `endpoint_url` do boto3 para  o minio
+
+
+## Links úteis
+[Pull Request que habilita o Minio, mas que não sei como usar a classe](https://github.com/great-expectations/great_expectations/commit/55d15ea0db0fa3e0454defc841357a09909834db)
