@@ -1,0 +1,14 @@
+# load base image
+FROM ...
+
+# whatever the image does
+
+## MANDATORY ENVIRONMENT VARIABLES
+ENV MONGODB_HOST "host.docker.internal"
+ENV MONGODB_PORT 27017
+ENV MONGODB_DB "middleware"
+# three days in seconds
+ENV MONGODB_DOCUMENTS_TTL 259200
+ENV MONGODB_TIMEZONE  "America/Sao_Paulo"
+
+# whatever the image does again

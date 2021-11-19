@@ -1,0 +1,26 @@
+version: '3'
+services:
+    portainer:
+        build:
+            context: ./
+            dockerfile: ./images/portainer/Dockerfile
+            args:
+                DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
+        container_name: portainer
+        restart: always
+        volumes:
+            - ./portainer_data:/data
+            - ./images:/images
+            - /var/run/docker.sock:/var/run/docker.sock
+            # specific
+            - ./dags:/opt/airflow/dags:z
+            - ./logs:/opt/airflow/logs:z
+            - ./spark:/opt/airflow/spark:z
+            - ./airflow.cfg:/opt/airflow/airflow.cfg:z
+        ports:
+            - "7999:9000"
+            - "9443:9443"
+        environment:
+            - DOCKER_GROUP_ID=${DOCKER_GROUP_ID}
+        #command: >
+        #    sh -c "bin/dremio-admin upgrade && bin/dremio --config /opt/dremio/conf start-fg"

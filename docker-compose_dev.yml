@@ -1,0 +1,15 @@
+version: '3'
+services:
+    jupyter-lab:
+        build:
+            context: ./
+            dockerfile: ./images/jupyter/Dockerfile
+        container_name: jupyter-lab
+        volumes:
+            - ./notebooks:/home/jovyan/work
+        ports:
+            - "7777:8888"
+        environment:
+            - JUPYTER_ENABLE_LAB=yes
+            # TODO: add packages to a environment variable
+            - PYSPARK_SUBMIT_ARGS=--packages org.apache.hadoop:hadoop-aws:3.2.0,com.amazonaws:aws-java-sdk-bundle:.11.980,org.apache.httpcomponents:httpclient:4.5.3,joda-time:joda-time:2.9.9,io.delta:delta-core_2.12:1.0.0 pyspark-shell

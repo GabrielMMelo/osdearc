@@ -1,0 +1,55 @@
+version: '3'
+services:
+    spark-master:
+        build:
+            context: ./
+            dockerfile: ./images/spark/master/Dockerfile
+        container_name: spark-master
+        hostname: spark
+        volumes:
+            - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
+            - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
+            - ./certs:/spark/certs
+        ports:
+            - "8080:8080"
+            - "7077:7077"
+        environment:
+            - SPARK_MODE=master
+            - INIT_DAEMON_STEP=setup_spark
+
+    spark-worker-1:
+        build:
+            context: ./
+            dockerfile: ./images/spark/worker/Dockerfile
+        container_name: spark-worker-1
+        depends_on:
+            - spark-master
+        volumes:
+            - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
+            - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
+            - ./certs:/spark/certs
+        ports:
+            - "8081:8081"
+        environment:
+            - "SPARK_MASTER=spark://spark-master:7077"
+            - SPARK_MODE=worker
+
+    spark-worker-2:
+        build:
+            context: ./
+            dockerfile: ./images/spark/worker/Dockerfile
+        container_name: spark-worker-2
+        depends_on:
+            - spark-master
+        volumes:
+            - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
+            - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
+            - ./certs:/spark/certs
+        ports:
+            - "8082:8081"
+        environment:
+            - "SPARK_MASTER=spark://spark-master:7077"
+            - SPARK_MODE=worker

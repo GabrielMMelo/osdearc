@@ -18,6 +18,8 @@ services:
         build:
             context: ./
             dockerfile: ./images/airflow-worker/Dockerfile
+            args:
+                DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
         container_name: airflow-celery-worker-1
         restart: always
         volumes:
@@ -27,6 +29,7 @@ services:
             - ./certs:/opt/airflow/certs
             - ./spark:/opt/airflow/spark
             - ./conf/airflow.cfg:/opt/airflow/airflow.cfg
+            - /var/run/docker.sock:/var/run/docker.sock
         ports:
             - "8793:8793"
         environment:
@@ -44,11 +47,13 @@ services:
         volumes:
             - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
             - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
             - ./certs:/spark/certs
         ports:
             - "8080:8080"
             - "7077:7077"
         environment:
+            - SPARK_MODE=master
             - INIT_DAEMON_STEP=setup_spark
 
     spark-worker-1:
@@ -61,11 +66,13 @@ services:
         volumes:
             - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
             - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
             - ./certs:/spark/certs
         ports:
             - "8081:8081"
         environment:
             - "SPARK_MASTER=spark://spark-master:7077"
+            - SPARK_MODE=worker
 
     spark-worker-2:
         build:
@@ -77,8 +84,41 @@ services:
         volumes:
             - ./spark/conf/spark-defaults.conf:/spark/conf/spark-defaults.conf
             - ./spark/conf/spark-env.sh:/spark/conf/spark-env.sh
+            - ./spark:/opt/airflow/spark
             - ./certs:/spark/certs
         ports:
             - "8082:8081"
         environment:
             - "SPARK_MASTER=spark://spark-master:7077"
+            - SPARK_MODE=worker
+
+    dremio-master:
+        build:
+            context: ./
+            dockerfile: ./images/dremio/Dockerfile
+        container_name: dremio-master
+        restart: always
+        volumes:
+            - ./dremio/data:/opt/dremio/data
+            - ./dremio/conf:/opt/dremio/conf
+            #- ./certs:/opt/dremio/certs
+        ports:
+            - "9047:9047"
+            - "31010:31010" 
+            - "32010:32010" 
+            - "45678:45678"
+        command: >
+            sh -c "bin/dremio --config /opt/dremio/conf start-fg"
+    mongodb:
+        build:
+            context: ./
+            dockerfile: ./images/mongodb/Dockerfile
+        container_name: mongodb
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        volumes:
+            - ./mongodb/data/db:/data/db
+        ports:
+            - "27017:27017"

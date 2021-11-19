@@ -1,0 +1,3 @@
+[submodule "dags"]
+	path = dags
+	url = git@github.com:GabrielMMelo/osdearc-dags.git
